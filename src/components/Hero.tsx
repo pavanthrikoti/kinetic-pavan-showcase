@@ -1,213 +1,267 @@
 
-import React, { useEffect, useState, useCallback, memo } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Github, Linkedin, Download, ExternalLink, Code, Briefcase } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
+import { ChevronRight, Download, Github, Linkedin, Mail, MapPin, Calendar, Code2 } from 'lucide-react';
 
-const Hero: React.FC = memo(() => {
-  const [currentRoleIndex, setCurrentRoleIndex] = useState(0);
+interface HeroProps {
+  className?: string;
+}
+
+const Hero: React.FC<HeroProps> = ({ className }) => {
+  const [currentRole, setCurrentRole] = useState(0);
   const [displayedText, setDisplayedText] = useState('');
   const [isTyping, setIsTyping] = useState(true);
-  
+
   const roles = [
-    "React Developer",
-    "Full Stack Web Developer", 
-    "Software Engineer",
-    "BTech CSE Student",
-    "Cloud Developer",
-    "AI Tools Expert",
-    "Prompt Engineer"
+    'React Developer',
+    'Full Stack Web Developer', 
+    'Software Engineer',
+    'Student',
+    'Cloud Developer',
+    'AI Tools Expert',
+    'Prompt Engineer'
   ];
 
-  const currentRole = roles[currentRoleIndex];
-
   useEffect(() => {
-    let timeoutId: NodeJS.Timeout;
+    let timeout: NodeJS.Timeout;
+    const role = roles[currentRole];
     
     if (isTyping) {
-      if (displayedText.length < currentRole.length) {
-        timeoutId = setTimeout(() => {
-          setDisplayedText(currentRole.slice(0, displayedText.length + 1));
+      if (displayedText.length < role.length) {
+        timeout = setTimeout(() => {
+          setDisplayedText(role.slice(0, displayedText.length + 1));
         }, 100);
       } else {
-        timeoutId = setTimeout(() => {
+        timeout = setTimeout(() => {
           setIsTyping(false);
         }, 2000);
       }
     } else {
       if (displayedText.length > 0) {
-        timeoutId = setTimeout(() => {
+        timeout = setTimeout(() => {
           setDisplayedText(displayedText.slice(0, -1));
         }, 50);
       } else {
-        setCurrentRoleIndex((prev) => (prev + 1) % roles.length);
+        setCurrentRole((prev) => (prev + 1) % roles.length);
         setIsTyping(true);
       }
     }
 
-    return () => clearTimeout(timeoutId);
-  }, [displayedText, isTyping, currentRole, roles.length]);
-
-  const handleResumeDownload = useCallback(() => {
-    const link = document.createElement('a');
-    link.href = '#'; // Replace with actual resume URL
-    link.download = 'Pavan_Thrikoti_Resume.pdf';
-    link.click();
-    console.log('Resume download initiated');
-  }, []);
+    return () => clearTimeout(timeout);
+  }, [displayedText, isTyping, currentRole, roles]);
 
   return (
-    <section className="min-h-screen flex items-center justify-center gradient-bg px-4 relative overflow-hidden" id="home">
-      {/* Background decoration */}
-      <div className="absolute inset-0 opacity-10">
-        <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-primary rounded-full blur-3xl"></div>
-        <div className="absolute bottom-1/4 right-1/4 w-64 h-64 bg-primary rounded-full blur-3xl"></div>
+    <section className={`relative flex items-center justify-center bg-gradient-to-br from-background via-background to-muted/30 ${className}`}>
+      {/* Background Pattern */}
+      <div className="absolute inset-0 opacity-5">
+        <div className="absolute inset-0 bg-grid-white/10 bg-[size:50px_50px]" />
       </div>
 
-      <div className="container mx-auto text-center relative z-10">
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-          className="mb-8"
-        >
-          {/* Profile Avatar */}
-          <motion.div 
-            className="w-32 h-32 mx-auto mb-8 rounded-full bg-gradient-to-r from-primary to-green-400 p-1 glow-effect"
-            whileHover={{ scale: 1.1 }}
-            transition={{ type: "spring", stiffness: 300 }}
+      <div className="relative z-10 w-full max-w-7xl mx-auto px-6 lg:px-8">
+        <div className="grid lg:grid-cols-2 gap-12 items-center">
+          {/* Content */}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            className="text-center lg:text-left"
           >
-            <div className="w-full h-full rounded-full bg-background flex items-center justify-center overflow-hidden">
-              <img 
-                src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face&auto=format"
-                alt="Pavan Thrikoti"
-                className="w-full h-full object-cover rounded-full"
-              />
+            {/* Greeting */}
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+              className="flex items-center justify-center lg:justify-start gap-2 mb-4"
+            >
+              <span className="text-lg text-muted-foreground">Hello, I'm</span>
+              <motion.div
+                animate={{ rotate: [0, 14, -8, 14, -4, 10, 0] }}
+                transition={{ duration: 1.5, delay: 1, repeat: Infinity, repeatDelay: 3 }}
+                className="text-2xl"
+              >
+                👋
+              </motion.div>
+            </motion.div>
+
+            {/* Name */}
+            <motion.h1
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.3 }}
+              className="text-4xl md:text-6xl lg:text-7xl font-bold mb-6"
+            >
+              <span className="bg-gradient-to-r from-primary via-primary to-green-400 bg-clip-text text-transparent">
+                Pavan Thrikoti
+              </span>
+            </motion.h1>
+
+            {/* Role with Typewriter */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.4 }}
+              className="mb-8"
+            >
+              <div className="text-xl md:text-2xl lg:text-3xl text-muted-foreground mb-2">
+                I'm a{' '}
+                <span className="text-primary font-semibold min-h-[1.2em] inline-block">
+                  {displayedText}
+                  <motion.span
+                    animate={{ opacity: [1, 0] }}
+                    transition={{ duration: 0.8, repeat: Infinity }}
+                    className="ml-1 text-primary"
+                  >
+                    |
+                  </motion.span>
+                </span>
+              </div>
+              <p className="text-lg text-muted-foreground max-w-2xl leading-relaxed">
+                BTech CSE student passionate about creating innovative web solutions and exploring cutting-edge technologies.
+              </p>
+            </motion.div>
+
+            {/* Stats */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.5 }}
+              className="grid grid-cols-3 gap-6 mb-8"
+            >
+              <div className="text-center lg:text-left">
+                <div className="text-2xl font-bold text-primary">10+</div>
+                <div className="text-sm text-muted-foreground">Projects</div>
+              </div>
+              <div className="text-center lg:text-left">
+                <div className="text-2xl font-bold text-primary">500+</div>
+                <div className="text-sm text-muted-foreground">Hours Coded</div>
+              </div>
+              <div className="text-center lg:text-left">
+                <div className="text-2xl font-bold text-primary">15+</div>
+                <div className="text-sm text-muted-foreground">Technologies</div>
+              </div>
+            </motion.div>
+
+            {/* CTA Buttons */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.6 }}
+              className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start mb-8"
+            >
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="group bg-primary text-primary-foreground px-8 py-4 rounded-lg font-semibold flex items-center gap-2 hover:shadow-xl hover:shadow-primary/25 transition-all duration-300"
+              >
+                <Download size={20} />
+                Download CV
+                <ChevronRight size={16} className="group-hover:translate-x-1 transition-transform" />
+              </motion.button>
+
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="group border border-border hover:border-primary px-8 py-4 rounded-lg font-semibold flex items-center gap-2 hover:bg-primary/5 transition-all duration-300"
+              >
+                <Mail size={20} />
+                Get In Touch
+              </motion.button>
+            </motion.div>
+
+            {/* Social Links */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.7 }}
+              className="flex gap-4 justify-center lg:justify-start"
+            >
+              {[
+                { icon: Github, href: 'https://github.com/pavanthrikoti', label: 'GitHub' },
+                { icon: Linkedin, href: 'https://linkedin.com/in/pavanthrikoti', label: 'LinkedIn' },
+                { icon: Code2, href: 'https://leetcode.com/pavanthrikoti', label: 'LeetCode' }
+              ].map((social, index) => (
+                <motion.a
+                  key={social.label}
+                  href={social.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  whileHover={{ scale: 1.1, y: -2 }}
+                  whileTap={{ scale: 0.9 }}
+                  className="w-12 h-12 bg-muted hover:bg-primary/20 rounded-lg flex items-center justify-center text-muted-foreground hover:text-primary transition-all duration-300"
+                  aria-label={social.label}
+                >
+                  <social.icon size={20} />
+                </motion.a>
+              ))}
+            </motion.div>
+          </motion.div>
+
+          {/* Image/Visual */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 1, delay: 0.4 }}
+            className="relative flex justify-center"
+          >
+            <div className="relative">
+              {/* Profile Image */}
+              <div className="w-80 h-80 rounded-full overflow-hidden border-4 border-primary/20 shadow-2xl">
+                <img
+                  src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop&crop=face"
+                  alt="Pavan Thrikoti"
+                  className="w-full h-full object-cover"
+                />
+              </div>
+
+              {/* Floating Elements */}
+              <motion.div
+                animate={{ y: [-10, 10, -10] }}
+                transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+                className="absolute -top-4 -right-4 bg-primary/20 backdrop-blur-sm rounded-xl p-4 border border-primary/30"
+              >
+                <Code2 className="text-primary" size={24} />
+              </motion.div>
+
+              <motion.div
+                animate={{ y: [10, -10, 10] }}
+                transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+                className="absolute -bottom-4 -left-4 bg-green-400/20 backdrop-blur-sm rounded-xl p-4 border border-green-400/30"
+              >
+                <MapPin className="text-green-400" size={24} />
+              </motion.div>
             </div>
           </motion.div>
-          
-          {/* Name */}
-          <motion.h1 
-            className="text-3xl md:text-5xl lg:text-6xl font-bold text-foreground mb-4"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3 }}
-          >
-            Hi, I'm <span className="text-primary">Pavan Thrikoti</span>
-          </motion.h1>
-          
-          {/* Typewriter Role */}
-          <div className="h-16 mb-6 flex items-center justify-center">
-            <motion.h2 
-              className="text-xl md:text-2xl lg:text-3xl text-muted-foreground font-medium min-h-[3rem] flex items-center"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.5 }}
-            >
-              <Code className="mr-3 text-primary" size={28} />
-              <span className="relative">
-                {displayedText}
-                <span className="border-r-2 border-primary animate-pulse ml-1">|</span>
-              </span>
-            </motion.h2>
-          </div>
-          
-          {/* Description */}
-          <motion.p 
-            className="text-lg md:text-xl text-muted-foreground mb-8 max-w-2xl mx-auto leading-relaxed"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 1.2 }}
-          >
-            Passionate about coding, problem-solving, and building innovative solutions that make a difference in the digital world.
-          </motion.p>
-        </motion.div>
+        </div>
 
-        {/* Action Buttons */}
-        <motion.div 
-          className="flex flex-wrap justify-center gap-4 mb-12"
-          initial={{ opacity: 0, y: 20 }}
+        {/* Quick Info Cards */}
+        <motion.div
+          initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 1.5 }}
+          transition={{ duration: 0.8, delay: 0.8 }}
+          className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mt-16"
         >
-          <motion.a
-            href="https://github.com/pavanthrikoti"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center gap-2 glass-effect hover:bg-secondary/80 px-6 py-3 rounded-full transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-primary card-hover"
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            aria-label="Visit GitHub profile"
-          >
-            <Github size={20} />
-            <span>GitHub</span>
-            <ExternalLink size={16} className="opacity-60" />
-          </motion.a>
-          
-          <motion.a
-            href="https://linkedin.com/in/pavanthrikoti"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 px-6 py-3 rounded-full transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-primary card-hover"
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            aria-label="Visit LinkedIn profile"
-          >
-            <Linkedin size={20} />
-            <span>LinkedIn</span>
-            <ExternalLink size={16} className="opacity-60" />
-          </motion.a>
-          
-          <motion.button
-            onClick={handleResumeDownload}
-            className="flex items-center gap-2 btn-primary card-hover focus:ring-2 focus:ring-primary focus:ring-offset-2"
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            aria-label="Download resume"
-          >
-            <Download size={20} />
-            <span>Resume</span>
-          </motion.button>
-
-          <motion.a
-            href="https://leetcode.com/u/pavanthrikoti/"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center gap-2 glass-effect hover:bg-secondary/80 px-6 py-3 rounded-full transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-primary card-hover"
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            aria-label="Visit LeetCode profile"
-          >
-            <Briefcase size={20} />
-            <span>LeetCode</span>
-            <ExternalLink size={16} className="opacity-60" />
-          </motion.a>
-        </motion.div>
-
-        {/* Scroll Indicator */}
-        <motion.div 
-          className="flex flex-col items-center"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 2 }}
-        >
-          <span className="text-sm text-muted-foreground mb-2">Scroll to explore</span>
-          <motion.div 
-            className="w-6 h-10 border-2 border-primary rounded-full flex justify-center"
-            animate={{ y: [0, 5, 0] }}
-            transition={{ duration: 1.5, repeat: Infinity }}
-          >
-            <motion.div 
-              className="w-1 h-3 bg-primary rounded-full mt-2"
-              animate={{ y: [0, 3, 0] }}
-              transition={{ duration: 1.5, repeat: Infinity }}
-            />
-          </motion.div>
+          {[
+            { icon: Calendar, title: 'Experience', value: '2+ Years', desc: 'Learning & Building' },
+            { icon: MapPin, title: 'Location', value: 'India', desc: 'Available Remotely' },
+            { icon: Code2, title: 'Focus', value: 'Full Stack', desc: 'Web Development' }
+          ].map((item, index) => (
+            <motion.div
+              key={item.title}
+              whileHover={{ scale: 1.02, y: -5 }}
+              className="bg-card/50 backdrop-blur-sm border border-border/50 rounded-xl p-6 text-center hover:shadow-lg hover:shadow-primary/10 transition-all duration-300"
+            >
+              <div className="w-12 h-12 bg-primary/20 rounded-lg flex items-center justify-center mx-auto mb-4">
+                <item.icon className="text-primary" size={24} />
+              </div>
+              <h3 className="font-semibold text-foreground mb-1">{item.title}</h3>
+              <p className="text-lg font-bold text-primary mb-1">{item.value}</p>
+              <p className="text-sm text-muted-foreground">{item.desc}</p>
+            </motion.div>
+          ))}
         </motion.div>
       </div>
     </section>
   );
-});
-
-Hero.displayName = 'Hero';
+};
 
 export default Hero;

@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import React, { useState, useCallback, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useIsMobile } from '../hooks/useIsMobile';
 import Preloader from '../components/Preloader';
@@ -25,117 +25,67 @@ const Index = () => {
   }, []);
 
   const handleSectionChange = useCallback((section: string) => {
-    if (activeSection === section) return;
-    
     setActiveSection(section);
-    
-    const element = document.getElementById(section);
-    if (element) {
-      element.scrollIntoView({ 
-        behavior: 'smooth',
-        block: 'start'
-      });
-    }
-  }, [activeSection]);
-
-  // Improved scroll detection
-  useEffect(() => {
-    let ticking = false;
-    
-    const handleScroll = () => {
-      if (!ticking) {
-        requestAnimationFrame(() => {
-          const scrollPosition = window.scrollY;
-          const windowHeight = window.innerHeight;
-          
-          let currentSection = 'home';
-          let maxVisibility = 0;
-          
-          SECTIONS.forEach(section => {
-            const element = document.getElementById(section);
-            if (element) {
-              const rect = element.getBoundingClientRect();
-              const visibleHeight = Math.min(rect.bottom, windowHeight) - Math.max(rect.top, 0);
-              const visibility = Math.max(0, visibleHeight) / windowHeight;
-              
-              if (visibility > maxVisibility && visibility > 0.4) {
-                maxVisibility = visibility;
-                currentSection = section;
-              }
-            }
-          });
-          
-          if (currentSection !== activeSection) {
-            setActiveSection(currentSection);
-          }
-          
-          ticking = false;
-        });
-        ticking = true;
-      }
-    };
-
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    handleScroll();
-    
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, [activeSection]);
-
-  // Prevent horizontal scrolling
-  useEffect(() => {
-    document.body.style.overflowX = 'hidden';
-    document.documentElement.style.overflowX = 'hidden';
-    
-    return () => {
-      document.body.style.overflowX = 'auto';
-      document.documentElement.style.overflowX = 'auto';
-    };
   }, []);
 
+  const renderActiveSection = useMemo(() => {
+    const sectionProps = {
+      className: `w-full ${isMobile ? 'h-[calc(100vh-80px)]' : 'h-[calc(100vh-80px)]'} overflow-hidden`
+    };
+
+    switch (activeSection) {
+      case 'home':
+        return <Hero {...sectionProps} />;
+      case 'about':
+        return <About {...sectionProps} />;
+      case 'projects':
+        return <Projects {...sectionProps} />;
+      case 'skills':
+        return <Skills {...sectionProps} />;
+      case 'achievements':
+        return <Achievements {...sectionProps} />;
+      case 'certificates':
+        return <Certificates {...sectionProps} />;
+      case 'contact':
+        return <Contact {...sectionProps} />;
+      default:
+        return <Hero {...sectionProps} />;
+    }
+  }, [activeSection, isMobile]);
+
   const mainContent = useMemo(() => (
-    <div className="w-full overflow-x-hidden">
+    <div className="w-full h-screen overflow-hidden">
       <Navigation 
         activeSection={activeSection} 
         onSectionChange={handleSectionChange}
         isMobile={isMobile}
       />
       
-      <main className={`${isMobile ? 'pb-20' : 'pt-16'} w-full`}>
-        <section id="home" className="min-h-screen w-full">
-          <Hero />
-        </section>
-        
-        <section id="about" className="min-h-screen w-full">
-          <About />
-        </section>
-        
-        <section id="projects" className="min-h-screen w-full">
-          <Projects />
-        </section>
-        
-        <section id="skills" className="min-h-screen w-full">
-          <Skills />
-        </section>
-        
-        <section id="achievements" className="min-h-screen w-full">
-          <Achievements />
-        </section>
-        
-        <section id="certificates" className="min-h-screen w-full">
-          <Certificates />
-        </section>
-        
-        <section id="contact" className="min-h-screen w-full">
-          <Contact />
-        </section>
+      <main className={`w-full ${isMobile ? 'mt-0' : 'mt-20'} ${isMobile ? 'h-[calc(100vh-80px)]' : 'h-[calc(100vh-80px)]'} overflow-hidden`}>
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={activeSection}
+            initial={{ opacity: 0, x: 50 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -50 }}
+            transition={{ duration: 0.3, ease: 'easeInOut' }}
+            className="w-full h-full"
+          >
+            {renderActiveSection}
+          </motion.div>
+        </AnimatePresence>
       </main>
       
-      <Footer />
+      {activeSection === 'contact' && (
+        <div className="absolute bottom-0 left-0 right-0">
+          <Footer />
+        </div>
+      )}
     </div>
-  ), [activeSection, handleSectionChange, isMobile]);
+  ), [activeSection, handleSectionChange, isMobile, renderActiveSection]);
 
   return (
-    <div className="min-h-screen bg-background text-foreground antialiased w-full overflow-x-hidden">
+    <div className="w-full h-screen bg-background text-foreground antialiased overflow-hidden">
       <AnimatePresence mode="wait">
         {isLoading && <Preloader onComplete={handlePreloaderComplete} />}
       </AnimatePresence>
@@ -146,7 +96,7 @@ const Index = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.5 }}
-            className="w-full"
+            className="w-full h-full overflow-hidden"
           >
             {mainContent}
           </motion.div>

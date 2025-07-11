@@ -1,7 +1,7 @@
 
 import React, { memo, useCallback } from 'react';
 import { motion } from 'framer-motion';
-import { Home, User, Code, Award, FileText, Mail, Menu } from 'lucide-react';
+import { Home, User, Code, Award, FileText, Mail, Zap } from 'lucide-react';
 
 interface NavigationProps {
   activeSection: string;
@@ -13,7 +13,7 @@ const navItems = [
   { id: 'home', label: 'Home', icon: Home },
   { id: 'about', label: 'About', icon: User },
   { id: 'projects', label: 'Projects', icon: Code },
-  { id: 'skills', label: 'Skills', icon: Menu },
+  { id: 'skills', label: 'Skills', icon: Zap },
   { id: 'achievements', label: 'Achievements', icon: Award },
   { id: 'certificates', label: 'Certificates', icon: FileText },
   { id: 'contact', label: 'Contact', icon: Mail },
@@ -27,14 +27,14 @@ const Navigation: React.FC<NavigationProps> = memo(({ activeSection, onSectionCh
   if (isMobile) {
     return (
       <motion.nav 
-        className="fixed bottom-0 left-0 right-0 bg-card/95 backdrop-blur-md border-t border-border z-40 px-2 py-2 safe-area-pb"
+        className="fixed bottom-0 left-0 right-0 bg-card/95 backdrop-blur-md border-t border-border z-50 px-2 py-2 safe-area-pb h-20"
         initial={{ y: 100 }}
         animate={{ y: 0 }}
         transition={{ duration: 0.3 }}
         role="navigation"
         aria-label="Main navigation"
       >
-        <div className="flex justify-around items-center max-w-sm mx-auto">
+        <div className="flex justify-around items-center max-w-sm mx-auto h-full">
           {navItems.map((item) => {
             const Icon = item.icon;
             const isActive = activeSection === item.id;
@@ -42,7 +42,7 @@ const Navigation: React.FC<NavigationProps> = memo(({ activeSection, onSectionCh
               <motion.button
                 key={item.id}
                 onClick={() => handleSectionClick(item.id)}
-                className={`flex flex-col items-center p-2 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-primary ${
+                className={`flex flex-col items-center justify-center p-2 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-primary min-h-[60px] ${
                   isActive ? 'text-primary' : 'text-muted-foreground hover:text-foreground'
                 }`}
                 whileHover={{ scale: 1.05 }}
@@ -51,7 +51,7 @@ const Navigation: React.FC<NavigationProps> = memo(({ activeSection, onSectionCh
                 aria-current={isActive ? 'page' : undefined}
               >
                 <Icon size={20} aria-hidden="true" />
-                <span className="text-xs mt-1">{item.label}</span>
+                <span className="text-xs mt-1 font-medium">{item.label}</span>
                 {isActive && (
                   <motion.div
                     className="w-1 h-1 bg-primary rounded-full mt-1"
@@ -69,15 +69,15 @@ const Navigation: React.FC<NavigationProps> = memo(({ activeSection, onSectionCh
 
   return (
     <motion.nav 
-      className="fixed top-0 left-0 right-0 bg-card/90 backdrop-blur-md border-b border-border z-40"
+      className="fixed top-0 left-0 right-0 bg-card/90 backdrop-blur-md border-b border-border z-50 h-20"
       initial={{ y: -100 }}
       animate={{ y: 0 }}
       transition={{ duration: 0.3 }}
       role="navigation"
       aria-label="Main navigation"
     >
-      <div className="max-w-7xl mx-auto px-6 py-4">
-        <div className="flex justify-between items-center">
+      <div className="max-w-7xl mx-auto px-6 h-full">
+        <div className="flex justify-between items-center h-full">
           <motion.h1 
             className="text-2xl font-bold text-primary"
             whileHover={{ scale: 1.05 }}
@@ -91,7 +91,7 @@ const Navigation: React.FC<NavigationProps> = memo(({ activeSection, onSectionCh
                 <motion.button
                   key={item.id}
                   onClick={() => handleSectionClick(item.id)}
-                  className={`relative text-sm font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded px-2 py-1 ${
+                  className={`relative text-sm font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded px-3 py-2 ${
                     isActive ? 'text-primary' : 'text-muted-foreground hover:text-foreground'
                   }`}
                   whileHover={{ scale: 1.05 }}
