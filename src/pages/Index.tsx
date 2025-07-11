@@ -25,13 +25,12 @@ const Index = () => {
   }, []);
 
   const handleSectionChange = useCallback((section: string) => {
-    if (activeSection === section) return; // Prevent unnecessary operations
+    if (activeSection === section) return;
     
     setActiveSection(section);
     
     const element = document.getElementById(section);
     if (element) {
-      // Use more performant scrolling
       element.scrollIntoView({ 
         behavior: 'smooth',
         block: 'start'
@@ -39,7 +38,7 @@ const Index = () => {
     }
   }, [activeSection]);
 
-  // Optimized scroll detection with throttling
+  // Improved scroll detection
   useEffect(() => {
     let ticking = false;
     
@@ -48,9 +47,7 @@ const Index = () => {
         requestAnimationFrame(() => {
           const scrollPosition = window.scrollY;
           const windowHeight = window.innerHeight;
-          const threshold = windowHeight * 0.3; // 30% of viewport
           
-          // Find the section that's most in view
           let currentSection = 'home';
           let maxVisibility = 0;
           
@@ -61,7 +58,7 @@ const Index = () => {
               const visibleHeight = Math.min(rect.bottom, windowHeight) - Math.max(rect.top, 0);
               const visibility = Math.max(0, visibleHeight) / windowHeight;
               
-              if (visibility > maxVisibility && visibility > 0.3) {
+              if (visibility > maxVisibility && visibility > 0.4) {
                 maxVisibility = visibility;
                 currentSection = section;
               }
@@ -78,64 +75,83 @@ const Index = () => {
       }
     };
 
-    // Use passive listener for better performance
     window.addEventListener('scroll', handleScroll, { passive: true });
-    
-    // Initial check
     handleScroll();
     
     return () => window.removeEventListener('scroll', handleScroll);
   }, [activeSection]);
 
+  // Prevent horizontal scrolling
+  useEffect(() => {
+    document.body.style.overflowX = 'hidden';
+    document.documentElement.style.overflowX = 'hidden';
+    
+    return () => {
+      document.body.style.overflowX = 'auto';
+      document.documentElement.style.overflowX = 'auto';
+    };
+  }, []);
+
   const mainContent = useMemo(() => (
-    <>
+    <div className="w-full overflow-x-hidden">
       <Navigation 
         activeSection={activeSection} 
         onSectionChange={handleSectionChange}
         isMobile={isMobile}
       />
       
-      <main className={isMobile ? 'pb-20' : 'pt-16'}>
-        <section id="home">
+      <main className={`${isMobile ? 'pb-20' : 'pt-16'} w-full`}>
+        <section id="home" className="min-h-screen w-full">
           <Hero />
         </section>
         
-        <section id="about">
+        <section id="about" className="min-h-screen w-full">
           <About />
         </section>
         
-        <section id="projects">
+        <section id="projects" className="min-h-screen w-full">
           <Projects />
         </section>
         
-        <section id="skills">
+        <section id="skills" className="min-h-screen w-full">
           <Skills />
         </section>
         
-        <section id="achievements">
+        <section id="achievements" className="min-h-screen w-full">
           <Achievements />
         </section>
         
-        <section id="certificates">
+        <section id="certificates" className="min-h-screen w-full">
           <Certificates />
         </section>
         
-        <section id="contact">
+        <section id="contact" className="min-h-screen w-full">
           <Contact />
         </section>
       </main>
       
       <Footer />
-    </>
+    </div>
   ), [activeSection, handleSectionChange, isMobile]);
 
   return (
-    <div className="min-h-screen bg-background text-foreground antialiased">
+    <div className="min-h-screen bg-background text-foreground antialiased w-full overflow-x-hidden">
       <AnimatePresence mode="wait">
         {isLoading && <Preloader onComplete={handlePreloaderComplete} />}
       </AnimatePresence>
 
-      {!isLoading && mainContent}
+      <AnimatePresence>
+        {!isLoading && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5 }}
+            className="w-full"
+          >
+            {mainContent}
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };
