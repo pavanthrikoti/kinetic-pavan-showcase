@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useIsMobile } from '../hooks/useIsMobile';
 import Preloader from '../components/Preloader';
@@ -13,102 +13,129 @@ import Certificates from '../components/Certificates';
 import Contact from '../components/Contact';
 import Footer from '../components/Footer';
 
+const SECTIONS = ['home', 'about', 'projects', 'skills', 'achievements', 'certificates', 'contact'] as const;
+
 const Index = () => {
   const [isLoading, setIsLoading] = useState(true);
-  const [activeSection, setActiveSection] = useState('home');
+  const [activeSection, setActiveSection] = useState<string>('home');
   const isMobile = useIsMobile();
 
-  const handlePreloaderComplete = () => {
+  const handlePreloaderComplete = useCallback(() => {
     setIsLoading(false);
-  };
+  }, []);
 
-  const handleSectionChange = (section: string) => {
+  const handleSectionChange = useCallback((section: string) => {
+    if (activeSection === section) return; // Prevent unnecessary operations
+    
     setActiveSection(section);
     
-    if (isMobile) {
-      // For mobile, scroll to section
-      const element = document.getElementById(section);
-      if (element) {
-        element.scrollIntoView({ behavior: 'smooth' });
-      }
-    } else {
-      // For desktop, scroll to section
-      const element = document.getElementById(section);
-      if (element) {
-        element.scrollIntoView({ behavior: 'smooth' });
-      }
-    }
-  };
-
-  // Handle scroll detection for active section
-  useEffect(() => {
-    const handleScroll = () => {
-      const sections = ['home', 'about', 'projects', 'skills', 'achievements', 'certificates', 'contact'];
-      
-      sections.forEach(section => {
-        const element = document.getElementById(section);
-        if (element) {
-          const rect = element.getBoundingClientRect();
-          const isVisible = rect.top <= window.innerHeight / 2 && rect.bottom >= window.innerHeight / 2;
-          
-          if (isVisible && activeSection !== section) {
-            setActiveSection(section);
-          }
-        }
+    const element = document.getElementById(section);
+    if (element) {
+      // Use more performant scrolling
+      element.scrollIntoView({ 
+        behavior: 'smooth',
+        block: 'start'
       });
+    }
+  }, [activeSection]);
+
+  // Optimized scroll detection with throttling
+  useEffect(() => {
+    let ticking = false;
+    
+    const handleScroll = () => {
+      if (!ticking) {
+        requestAnimationFrame(() => {
+          const scrollPosition = window.scrollY;
+          const windowHeight = window.innerHeight;
+          const threshold = windowHeight * 0.3; // 30% of viewport
+          
+          // Find the section that's most in view
+          let currentSection = 'home';
+          let maxVisibility = 0;
+          
+          SECTIONS.forEach(section => {
+            const element = document.getElementById(section);
+            if (element) {
+              const rect = element.getBoundingClientRect();
+              const visibleHeight = Math.min(rect.bottom, windowHeight) - Math.max(rect.top, 0);
+              const visibility = Math.max(0, visibleHeight) / windowHeight;
+              
+              if (visibility > maxVisibility && visibility > 0.3) {
+                maxVisibility = visibility;
+                currentSection = section;
+              }
+            }
+          });
+          
+          if (currentSection !== activeSection) {
+            setActiveSection(currentSection);
+          }
+          
+          ticking = false;
+        });
+        ticking = true;
+      }
     };
 
-    window.addEventListener('scroll', handleScroll);
+    // Use passive listener for better performance
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    
+    // Initial check
+    handleScroll();
+    
     return () => window.removeEventListener('scroll', handleScroll);
   }, [activeSection]);
 
+  const mainContent = useMemo(() => (
+    <>
+      <Navigation 
+        activeSection={activeSection} 
+        onSectionChange={handleSectionChange}
+        isMobile={isMobile}
+      />
+      
+      <main className={isMobile ? 'pb-20' : 'pt-16'}>
+        <section id="home">
+          <Hero />
+        </section>
+        
+        <section id="about">
+          <About />
+        </section>
+        
+        <section id="projects">
+          <Projects />
+        </section>
+        
+        <section id="skills">
+          <Skills />
+        </section>
+        
+        <section id="achievements">
+          <Achievements />
+        </section>
+        
+        <section id="certificates">
+          <Certificates />
+        </section>
+        
+        <section id="contact">
+          <Contact />
+        </section>
+      </main>
+      
+      <Footer />
+    </>
+  ), [activeSection, handleSectionChange, isMobile]);
+
   return (
-    <div className="min-h-screen bg-background">
-      <AnimatePresence>
+    <div className="min-h-screen bg-background text-foreground antialiased">
+      <AnimatePresence mode="wait">
         {isLoading && <Preloader onComplete={handlePreloaderComplete} />}
       </AnimatePresence>
 
-      {!isLoading && (
-        <>
-          <Navigation 
-            activeSection={activeSection} 
-            onSectionChange={handleSectionChange}
-            isMobile={isMobile}
-          />
-          
-          <main className={isMobile ? 'pb-20' : 'pt-16'}>
-            <div id="home">
-              <Hero />
-            </div>
-            
-            <div id="about">
-              <About />
-            </div>
-            
-            <div id="projects">
-              <Projects />
-            </div>
-            
-            <div id="skills">
-              <Skills />
-            </div>
-            
-            <div id="achievements">
-              <Achievements />
-            </div>
-            
-            <div id="certificates">
-              <Certificates />
-            </div>
-            
-            <div id="contact">
-              <Contact />
-            </div>
-          </main>
-          
-          <Footer />
-        </>
-      )}
+      {!isLoading && mainContent}
     </div>
   );
 };

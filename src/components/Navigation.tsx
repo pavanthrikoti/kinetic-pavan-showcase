@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { memo, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { Home, User, Code, Award, FileText, Mail, Menu } from 'lucide-react';
 
@@ -9,24 +9,30 @@ interface NavigationProps {
   isMobile: boolean;
 }
 
-const Navigation: React.FC<NavigationProps> = ({ activeSection, onSectionChange, isMobile }) => {
-  const navItems = [
-    { id: 'home', label: 'Home', icon: Home },
-    { id: 'about', label: 'About', icon: User },
-    { id: 'projects', label: 'Projects', icon: Code },
-    { id: 'skills', label: 'Skills', icon: Menu },
-    { id: 'achievements', label: 'Achievements', icon: Award },
-    { id: 'certificates', label: 'Certificates', icon: FileText },
-    { id: 'contact', label: 'Contact', icon: Mail },
-  ];
+const navItems = [
+  { id: 'home', label: 'Home', icon: Home },
+  { id: 'about', label: 'About', icon: User },
+  { id: 'projects', label: 'Projects', icon: Code },
+  { id: 'skills', label: 'Skills', icon: Menu },
+  { id: 'achievements', label: 'Achievements', icon: Award },
+  { id: 'certificates', label: 'Certificates', icon: FileText },
+  { id: 'contact', label: 'Contact', icon: Mail },
+] as const;
+
+const Navigation: React.FC<NavigationProps> = memo(({ activeSection, onSectionChange, isMobile }) => {
+  const handleSectionClick = useCallback((section: string) => {
+    onSectionChange(section);
+  }, [onSectionChange]);
 
   if (isMobile) {
     return (
       <motion.nav 
-        className="fixed bottom-0 left-0 right-0 bg-card border-t border-border z-40 px-2 py-2"
+        className="fixed bottom-0 left-0 right-0 bg-card/95 backdrop-blur-md border-t border-border z-40 px-2 py-2 safe-area-pb"
         initial={{ y: 100 }}
         animate={{ y: 0 }}
         transition={{ duration: 0.3 }}
+        role="navigation"
+        aria-label="Main navigation"
       >
         <div className="flex justify-around items-center max-w-sm mx-auto">
           {navItems.map((item) => {
@@ -35,19 +41,22 @@ const Navigation: React.FC<NavigationProps> = ({ activeSection, onSectionChange,
             return (
               <motion.button
                 key={item.id}
-                onClick={() => onSectionChange(item.id)}
-                className={`flex flex-col items-center p-2 rounded-lg transition-colors ${
-                  isActive ? 'text-primary' : 'text-gray-400'
+                onClick={() => handleSectionClick(item.id)}
+                className={`flex flex-col items-center p-2 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-primary ${
+                  isActive ? 'text-primary' : 'text-muted-foreground hover:text-foreground'
                 }`}
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.9 }}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                aria-label={`Navigate to ${item.label}`}
+                aria-current={isActive ? 'page' : undefined}
               >
-                <Icon size={20} />
+                <Icon size={20} aria-hidden="true" />
                 <span className="text-xs mt-1">{item.label}</span>
                 {isActive && (
                   <motion.div
                     className="w-1 h-1 bg-primary rounded-full mt-1"
                     layoutId="activeIndicator"
+                    aria-hidden="true"
                   />
                 )}
               </motion.button>
@@ -64,6 +73,8 @@ const Navigation: React.FC<NavigationProps> = ({ activeSection, onSectionChange,
       initial={{ y: -100 }}
       animate={{ y: 0 }}
       transition={{ duration: 0.3 }}
+      role="navigation"
+      aria-label="Main navigation"
     >
       <div className="max-w-7xl mx-auto px-6 py-4">
         <div className="flex justify-between items-center">
@@ -79,17 +90,20 @@ const Navigation: React.FC<NavigationProps> = ({ activeSection, onSectionChange,
               return (
                 <motion.button
                   key={item.id}
-                  onClick={() => onSectionChange(item.id)}
-                  className={`relative text-sm font-medium transition-colors ${
-                    isActive ? 'text-primary' : 'text-gray-400 hover:text-white'
+                  onClick={() => handleSectionClick(item.id)}
+                  className={`relative text-sm font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded px-2 py-1 ${
+                    isActive ? 'text-primary' : 'text-muted-foreground hover:text-foreground'
                   }`}
                   whileHover={{ scale: 1.05 }}
+                  aria-label={`Navigate to ${item.label}`}
+                  aria-current={isActive ? 'page' : undefined}
                 >
                   {item.label}
                   {isActive && (
                     <motion.div
                       className="absolute -bottom-1 left-0 right-0 h-0.5 bg-primary"
                       layoutId="desktopActiveIndicator"
+                      aria-hidden="true"
                     />
                   )}
                 </motion.button>
@@ -100,6 +114,8 @@ const Navigation: React.FC<NavigationProps> = ({ activeSection, onSectionChange,
       </div>
     </motion.nav>
   );
-};
+});
+
+Navigation.displayName = 'Navigation';
 
 export default Navigation;
