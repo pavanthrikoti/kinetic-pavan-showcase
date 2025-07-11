@@ -39,15 +39,15 @@ const Index = () => {
       case 'about':
         return <About {...sectionProps} />;
       case 'projects':
-        return <Projects {...sectionProps} />;
+        return <Projects />;
       case 'skills':
-        return <Skills {...sectionProps} />;
+        return <Skills />;
       case 'achievements':
-        return <Achievements {...sectionProps} />;
+        return <Achievements />;
       case 'certificates':
-        return <Certificates {...sectionProps} />;
+        return <Certificates />;
       case 'contact':
-        return <Contact {...sectionProps} />;
+        return <Contact />;
       default:
         return <Hero {...sectionProps} />;
     }
