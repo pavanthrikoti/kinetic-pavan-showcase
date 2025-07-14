@@ -3,11 +3,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { Github, ExternalLink, Code } from 'lucide-react';
 
-interface ProjectsProps {
-  className?: string;
-}
-
-const Projects: React.FC<ProjectsProps> = ({ className }) => {
+const Projects: React.FC = () => {
   const projects = [
     {
       title: 'Portfolio Website',
@@ -60,7 +56,7 @@ const Projects: React.FC<ProjectsProps> = ({ className }) => {
   ];
 
   return (
-    <section className={`${className || ''} py-6 px-6 bg-gray-900 overflow-y-auto`}>
+    <section className="min-h-screen py-20 px-6 bg-gray-900">
       <div className="max-w-7xl mx-auto">
         <motion.div
           initial={{ opacity: 0, y: 30 }}

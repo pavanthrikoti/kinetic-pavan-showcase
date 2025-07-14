@@ -3,11 +3,7 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Mail, Phone, MapPin, Send, Github, Linkedin, Twitter } from 'lucide-react';
 
-interface ContactProps {
-  className?: string;
-}
-
-const Contact: React.FC<ContactProps> = ({ className }) => {
+const Contact: React.FC = () => {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -58,7 +54,7 @@ const Contact: React.FC<ContactProps> = ({ className }) => {
   ];
 
   return (
-    <section className={`${className || ''} py-6 px-6 bg-gray-900 overflow-y-auto`}>
+    <section className="min-h-screen py-20 px-6 bg-gray-900">
       <div className="max-w-7xl mx-auto">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
