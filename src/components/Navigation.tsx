@@ -1,7 +1,7 @@
 
 import React, { memo, useCallback } from 'react';
 import { motion } from 'framer-motion';
-import { Home, User, Code, Award, FileText, Mail, Zap } from 'lucide-react';
+import { Home, User, Code, Award, Mail } from 'lucide-react';
 
 interface NavigationProps {
   activeSection: string;
@@ -12,10 +12,8 @@ interface NavigationProps {
 const navItems = [
   { id: 'home', label: 'Home', icon: Home },
   { id: 'about', label: 'About', icon: User },
-  { id: 'projects', label: 'Projects', icon: Code },
-  { id: 'skills', label: 'Skills', icon: Zap },
-  { id: 'achievements', label: 'Achievements', icon: Award },
-  { id: 'certificates', label: 'Certificates', icon: FileText },
+  { id: 'projects', label: 'Work', icon: Code },
+  { id: 'achievements', label: 'Awards', icon: Award },
   { id: 'contact', label: 'Contact', icon: Mail },
 ] as const;
 
@@ -34,7 +32,7 @@ const Navigation: React.FC<NavigationProps> = memo(({ activeSection, onSectionCh
         role="navigation"
         aria-label="Main navigation"
       >
-        <div className="flex justify-around items-center max-w-sm mx-auto h-full">
+        <div className="flex justify-around items-center max-w-md mx-auto h-full">
           {navItems.map((item) => {
             const Icon = item.icon;
             const isActive = activeSection === item.id;

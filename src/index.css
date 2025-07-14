@@ -62,30 +62,30 @@
   }
 
   html {
-    overflow: hidden; /* Prevent all scrolling */
     height: 100vh;
     width: 100vw;
+    overflow: hidden;
   }
 
   body {
     @apply bg-background text-foreground antialiased;
     font-feature-settings: "rlig" 1, "calt" 1;
-    overflow: hidden; /* Prevent all scrolling */
     height: 100vh;
     width: 100vw;
     line-height: 1.6;
-    position: fixed; /* Prevent any movement */
+    position: fixed;
     top: 0;
     left: 0;
+    overflow: hidden;
   }
 
   #root {
-    overflow: hidden; /* Prevent all scrolling */
     height: 100vh;
     width: 100vw;
     position: fixed;
     top: 0;
     left: 0;
+    overflow: hidden;
   }
 
   /* Prevent horizontal scrolling completely */
@@ -238,13 +238,19 @@
   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
 }
 
-/* Custom scrollbar (for internal component scrolling only) */
+/* Custom scrollbar for internal component scrolling */
+.custom-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: hsl(var(--primary)) hsl(var(--muted));
+}
+
 .custom-scroll::-webkit-scrollbar {
   width: 8px;
 }
 
 .custom-scroll::-webkit-scrollbar-track {
   background: hsl(var(--muted));
+  border-radius: 4px;
 }
 
 .custom-scroll::-webkit-scrollbar-thumb {
@@ -320,4 +326,17 @@
   100% {
     background-position: calc(200px + 100%) 0;
   }
+}
+
+/* Responsive improvements */
+@media (max-width: 768px) {
+  .container {
+    padding-left: 0.75rem;
+    padding-right: 0.75rem;
+  }
+}
+
+/* Smooth transitions for section changes */
+.section-transition {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }

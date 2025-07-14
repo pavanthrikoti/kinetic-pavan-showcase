@@ -13,7 +13,7 @@ import Certificates from '../components/Certificates';
 import Contact from '../components/Contact';
 import Footer from '../components/Footer';
 
-const SECTIONS = ['home', 'about', 'projects', 'skills', 'achievements', 'certificates', 'contact'] as const;
+const SECTIONS = ['home', 'about', 'projects', 'achievements', 'contact'] as const;
 
 const Index = () => {
   const [isLoading, setIsLoading] = useState(true);
@@ -29,29 +29,36 @@ const Index = () => {
   }, []);
 
   const renderActiveSection = useMemo(() => {
-    const sectionProps = {
-      className: `w-full ${isMobile ? 'h-[calc(100vh-80px)]' : 'h-[calc(100vh-80px)]'} overflow-hidden`
-    };
-
     switch (activeSection) {
       case 'home':
-        return <Hero {...sectionProps} />;
+        return <Hero />;
       case 'about':
-        return <About {...sectionProps} />;
+        return <About />;
       case 'projects':
-        return <Projects />;
-      case 'skills':
-        return <Skills />;
+        return (
+          <div className="w-full min-h-full overflow-y-auto custom-scroll">
+            <Projects />
+            <Skills />
+          </div>
+        );
       case 'achievements':
-        return <Achievements />;
-      case 'certificates':
-        return <Certificates />;
+        return (
+          <div className="w-full min-h-full overflow-y-auto custom-scroll">
+            <Achievements />
+            <Certificates />
+          </div>
+        );
       case 'contact':
-        return <Contact />;
+        return (
+          <div className="w-full min-h-full overflow-y-auto custom-scroll">
+            <Contact />
+            <Footer />
+          </div>
+        );
       default:
-        return <Hero {...sectionProps} />;
+        return <Hero />;
     }
-  }, [activeSection, isMobile]);
+  }, [activeSection]);
 
   const mainContent = useMemo(() => (
     <div className="w-full h-screen overflow-hidden">
@@ -61,7 +68,7 @@ const Index = () => {
         isMobile={isMobile}
       />
       
-      <main className={`w-full ${isMobile ? 'mt-0' : 'mt-20'} ${isMobile ? 'h-[calc(100vh-80px)]' : 'h-[calc(100vh-80px)]'} overflow-hidden`}>
+      <main className={`w-full ${isMobile ? 'pt-0 pb-20' : 'pt-20'} h-full overflow-hidden`}>
         <AnimatePresence mode="wait">
           <motion.div
             key={activeSection}
@@ -75,12 +82,6 @@ const Index = () => {
           </motion.div>
         </AnimatePresence>
       </main>
-      
-      {activeSection === 'contact' && (
-        <div className="absolute bottom-0 left-0 right-0">
-          <Footer />
-        </div>
-      )}
     </div>
   ), [activeSection, handleSectionChange, isMobile, renderActiveSection]);
 
