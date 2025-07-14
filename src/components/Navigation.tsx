@@ -1,11 +1,9 @@
 
-import React, { memo, useCallback } from 'react';
+import React, { memo, useCallback, useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Home, User, Code, Award, Mail } from 'lucide-react';
 
 interface NavigationProps {
-  activeSection: string;
-  onSectionChange: (section: string) => void;
   isMobile: boolean;
 }
 
@@ -17,10 +15,36 @@ const navItems = [
   { id: 'contact', label: 'Contact', icon: Mail },
 ] as const;
 
-const Navigation: React.FC<NavigationProps> = memo(({ activeSection, onSectionChange, isMobile }) => {
-  const handleSectionClick = useCallback((section: string) => {
-    onSectionChange(section);
-  }, [onSectionChange]);
+const Navigation: React.FC<NavigationProps> = memo(({ isMobile }) => {
+  const [activeSection, setActiveSection] = useState('home');
+
+  const scrollToSection = useCallback((sectionId: string) => {
+    const element = document.getElementById(sectionId);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, []);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const sections = ['home', 'about', 'projects', 'achievements', 'contact'];
+      const scrollY = window.scrollY;
+      
+      for (const section of sections) {
+        const element = document.getElementById(section);
+        if (element) {
+          const { offsetTop, offsetHeight } = element;
+          if (scrollY >= offsetTop - 100 && scrollY < offsetTop + offsetHeight - 100) {
+            setActiveSection(section);
+            break;
+          }
+        }
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   if (isMobile) {
     return (
@@ -39,7 +63,7 @@ const Navigation: React.FC<NavigationProps> = memo(({ activeSection, onSectionCh
             return (
               <motion.button
                 key={item.id}
-                onClick={() => handleSectionClick(item.id)}
+                onClick={() => scrollToSection(item.id)}
                 className={`flex flex-col items-center justify-center p-2 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-primary min-h-[60px] ${
                   isActive ? 'text-primary' : 'text-muted-foreground hover:text-foreground'
                 }`}
@@ -88,7 +112,7 @@ const Navigation: React.FC<NavigationProps> = memo(({ activeSection, onSectionCh
               return (
                 <motion.button
                   key={item.id}
-                  onClick={() => handleSectionClick(item.id)}
+                  onClick={() => scrollToSection(item.id)}
                   className={`relative text-sm font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded px-3 py-2 ${
                     isActive ? 'text-primary' : 'text-muted-foreground hover:text-foreground'
                   }`}
