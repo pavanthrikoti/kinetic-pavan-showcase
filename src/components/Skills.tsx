@@ -2,7 +2,11 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 
-const Skills: React.FC = () => {
+interface SkillsProps {
+  className?: string;
+}
+
+const Skills: React.FC<SkillsProps> = ({ className }) => {
   const skillCategories = [
     {
       title: 'Programming Languages',
@@ -47,7 +51,7 @@ const Skills: React.FC = () => {
   ];
 
   return (
-    <section className="min-h-screen py-20 px-6 bg-gray-800">
+    <section className={`${className || ''} py-6 px-6 bg-gray-800 overflow-y-auto`}>
       <div className="max-w-7xl mx-auto">
         <motion.div
           initial={{ opacity: 0, y: 30 }}

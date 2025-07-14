@@ -3,7 +3,11 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { Trophy, Star, Award, Code, Target } from 'lucide-react';
 
-const Achievements: React.FC = () => {
+interface AchievementsProps {
+  className?: string;
+}
+
+const Achievements: React.FC<AchievementsProps> = ({ className }) => {
   const achievements = [
     {
       title: 'LeetCode Problem Solver',
@@ -56,7 +60,7 @@ const Achievements: React.FC = () => {
   ];
 
   return (
-    <section className="min-h-screen py-20 px-6 bg-gray-900">
+    <section className={`${className || ''} py-6 px-6 bg-gray-900 overflow-y-auto`}>
       <div className="max-w-7xl mx-auto">
         <motion.div
           initial={{ opacity: 0, y: 30 }}

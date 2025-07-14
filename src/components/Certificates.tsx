@@ -3,7 +3,11 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronLeft, ChevronRight, Award, ExternalLink } from 'lucide-react';
 
-const Certificates: React.FC = () => {
+interface CertificatesProps {
+  className?: string;
+}
+
+const Certificates: React.FC<CertificatesProps> = ({ className }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
 
   const certificates = [
@@ -58,7 +62,7 @@ const Certificates: React.FC = () => {
   };
 
   return (
-    <section className="min-h-screen py-20 px-6 bg-gray-800">
+    <section className={`${className || ''} py-6 px-6 bg-gray-800 overflow-y-auto`}>
       <div className="max-w-7xl mx-auto">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
